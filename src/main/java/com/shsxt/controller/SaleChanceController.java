@@ -28,6 +28,11 @@ public class SaleChanceController extends BaseController {
 		return "sale_chance";
 	}
 	
+	@RequestMapping("branch")
+	public String branch () {
+		return "branch";
+	}
+	
 	@RequestMapping("list")
 	@ResponseBody
 	public Map<String, Object>selectForPage(SaleChanceQuery query) {
