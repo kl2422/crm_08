@@ -33,6 +33,14 @@ public class SaleChanceController extends BaseController {
 		return "branch";
 	}
 	
+	@RequestMapping("haha")
+	@ResponseBody
+	public Map<String, Object>haha(SaleChanceQuery query) {
+		Map<String, Object> result = saleChanceService.selectForPage(query);
+		return result;
+	}
+	
+	
 	@RequestMapping("list")
 	@ResponseBody
 	public Map<String, Object>selectForPage(SaleChanceQuery query) {
