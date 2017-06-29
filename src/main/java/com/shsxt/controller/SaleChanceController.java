@@ -30,6 +30,7 @@ public class SaleChanceController extends BaseController {
 	
 	@RequestMapping("branch")
 	public String branch () {
+		
 		return "branch";
 	}
 	
