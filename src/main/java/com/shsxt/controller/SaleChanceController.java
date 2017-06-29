@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -27,8 +28,14 @@ public class SaleChanceController extends BaseController {
 	private SaleChanceService saleChanceService;
 	
 	@RequestMapping("index")
-	public String index () {
-		return "sale_chance";
+	public String index (Integer state, Model model) {
+		if (state == null) {
+			return "sale_chance";
+		} else {
+			model.addAttribute("state", state);
+			return "sale_chance_assignment";
+		}
+		
 	}
 	
 	@RequestMapping("branch")

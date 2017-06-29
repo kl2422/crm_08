@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import com.shsxt.base.AssertUtil;
@@ -71,7 +70,7 @@ public class SaleChanceService {
 		Integer id = saleChance.getId();
 		SaleChance saleChanceFromDB = null;
 		if (id != null) { // 验证一下该记录是否存在
-			saleChanceFromDB = saleChanceDao.findById(id);
+			saleChanceFromDB = findById(id);
 			AssertUtil.notNull(saleChanceFromDB, "该记录不存在");
 		}
 		// 是否有过分配
@@ -116,6 +115,28 @@ public class SaleChanceService {
 			throw new ParamException("请选择记录进行删除");
 		}
 		saleChanceDao.delete(ids);
+	}
+	
+	/**
+	 * 根据ID获取对象
+	 * @param saleChanceId
+	 * @return
+	 */
+	public SaleChance findById(Integer saleChanceId) {
+		AssertUtil.intIsNotEmpty(saleChanceId, "请选择营销机会");
+		SaleChance saleChance = saleChanceDao.findById(saleChanceId);
+		AssertUtil.notNull(saleChance, "该机会不存在");
+		return saleChance;
+	}
+	
+	/**
+	 * 更新开发状态
+	 * @param saleChanceId
+	 * @param devResult
+	 */
+	public void updateDevResult(Integer saleChanceId, int devResult) {
+		AssertUtil.intIsNotEmpty(saleChanceId, "请选择营销机会");
+		saleChanceDao.updateDevResult(saleChanceId, devResult);
 	}
 
 }
