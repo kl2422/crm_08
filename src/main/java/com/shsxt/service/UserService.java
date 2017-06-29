@@ -2,10 +2,10 @@ package com.shsxt.service;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.shsxt.base.AssertUtil;
 import com.shsxt.dao.UserDao;
 import com.shsxt.exception.ParamException;
 import com.shsxt.model.User;
@@ -27,17 +27,20 @@ public class UserService {
 	public UserLoginIdentity login(String userName, String password) {
 		
 		// 非空验证
-		if (StringUtils.isBlank(userName)) {
-			throw new ParamException(100, "请输入用户名");
-		}
-		if (StringUtils.isBlank(password)) {
-			throw new ParamException(101, "请输入密码");
-		}
+		AssertUtil.isNotEmpty(userName, "请输入用户名");
+		AssertUtil.isNotEmpty(password, 100, "请输入密码");
+//		if (StringUtils.isBlank(userName)) {
+//			throw new ParamException(100, "请输入用户名");
+//		}
+//		if (StringUtils.isBlank(password)) {
+//			throw new ParamException(101, "请输入密码");
+//		}
 		// 根据用户名查询用户在验证
 		User user = userDao.findByUserName(userName.trim());
-		if (user == null) {
-			throw new ParamException(102, "用户名密码错误，请重新输入");
-		}
+		AssertUtil.notNull(user);
+//		if (user == null) {
+//			throw new ParamException(102, "用户名密码错误，请重新输入");
+//		}
 		// 密码验证：需要MD5加密
 		if (!MD5Util.md5Method(password).equals(user.getPassword())) {
 			throw new ParamException(103, "用户名密码错误，请重新输入");
