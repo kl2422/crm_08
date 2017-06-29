@@ -1,5 +1,7 @@
 package com.shsxt.model;
 
+import com.shsxt.base.BaseModel;
+
 @SuppressWarnings("serial")
 public class User extends BaseModel {
 	

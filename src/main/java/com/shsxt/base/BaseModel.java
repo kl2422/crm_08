@@ -1,4 +1,4 @@
-package com.shsxt.model;
+package com.shsxt.base;
 
 import java.io.Serializable;
 import java.util.Date;

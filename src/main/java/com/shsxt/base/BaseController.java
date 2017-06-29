@@ -1,4 +1,4 @@
-package com.shsxt.controller;
+package com.shsxt.base;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -6,8 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import com.shsxt.base.Constant;
-import com.shsxt.base.ResultInfo;
 import com.shsxt.exception.ParamException;
 
 public class BaseController {

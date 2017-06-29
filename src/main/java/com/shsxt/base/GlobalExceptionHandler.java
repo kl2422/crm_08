@@ -3,7 +3,6 @@ package com.shsxt.base;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.shsxt.controller.BaseController;
 import com.shsxt.exception.ParamException;
 
 /**

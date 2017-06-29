@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.shsxt.base.BaseController;
 import com.shsxt.base.ResultInfo;
 import com.shsxt.model.User;
 import com.shsxt.service.UserService;

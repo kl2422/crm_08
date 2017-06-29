@@ -34,15 +34,16 @@ public class SaleChanceService {
 	 */
 	public Map<String, Object> selectForPage(SaleChanceQuery query) {
 		// 分页查询 构建一个PageBounds-->dao返回PageList-->sql
-		if (query.getPage() == null || query.getPage() < 1) {
-			query.setPage(1);
-		}
-		if (query.getRows() == null || query.getRows() < 1) {
-			query.setRows(10);
-		}
-		PageBounds pageBounds = new PageBounds(query.getPage(), query.getRows());
+//		if (query.getPage() == null || query.getPage() < 1) {
+//			query.setPage(1);
+//		}
+//		if (query.getRows() == null || query.getRows() < 1) {
+//			query.setRows(10);
+//		}
+//		PageBounds pageBounds = new PageBounds(query.getPage(), query.getRows());
 		
-		PageList<SaleChance> saleChances = saleChanceDao.selectForPage(query, pageBounds);
+		PageList<SaleChance> saleChances = saleChanceDao.selectForPage
+				(query, query.buildPageBounds());
 		Paginator paginator = saleChances.getPaginator(); // 分页对象
 		Map<String, Object> result = new HashMap<>();
 		result.put("paginator", paginator);

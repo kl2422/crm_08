@@ -1,5 +1,7 @@
 package com.shsxt.model;
 
+import com.shsxt.base.BaseModel;
+
 /**
  * 客户实体类
  * Created by Tony on 2016/8/24.
