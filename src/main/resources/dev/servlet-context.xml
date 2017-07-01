@@ -27,6 +27,9 @@
 	<!-- 定时任务的注解驱动 -->
 	<task:annotation-driven/>
 	
+	<!-- 启用@Aspect注解 -->
+	<aop:aspectj-autoproxy />
+	
 	<!-- 视图配置 -->
 	<bean id="freemarkerConfig"
 		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer" >

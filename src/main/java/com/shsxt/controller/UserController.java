@@ -78,6 +78,4 @@ public class UserController extends BaseController {
 		userService.deleteBatch(ids);
 		return success("删除成功");
 	}
-	
-	
 }

@@ -28,4 +28,7 @@ public interface PermissionDao {
 	
 	void insertBatch(@Param(value="permissions")List<Permission> permissions);
 	
+	@Select("select acl_value from t_permission where role_id in (${roleIds}) and is_valid = 1")
+	List<String> findRolePermissions(@Param(value="roleIds")String roleIds);
+	
 }

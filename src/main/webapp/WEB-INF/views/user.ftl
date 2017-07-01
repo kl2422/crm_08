@@ -16,7 +16,7 @@
 	        <th field="email" width="100" align="center">邮箱</th>
 	        <th field="phone" width="100" align="center">联系电话</th>
 	        <th field="createDate" width="100" align="center">创建时间</th>
-	        <th field="roleIds" width="100" align="center">关联角色</th>
+	        <th field="roleIds" width="100" align="center" hidden="true">关联角色</th>
 	    </tr>
 	    </thead>
 	</table>

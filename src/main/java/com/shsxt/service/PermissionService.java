@@ -56,6 +56,17 @@ public class PermissionService {
 	}
 	
 	/**
+	 * 获取角色操作权限
+	 * @param substring
+	 * @return
+	 */
+	public List<String> findRolePermissions(String roleIds) {
+		List<String> aclValues = permissionDao.findRolePermissions(roleIds);
+		return aclValues;
+	}
+	
+	
+	/**
 	 * 赋予权限
 	 * @param roleId
 	 * @param moduleId
@@ -299,7 +310,4 @@ public class PermissionService {
 		permission.setAclValue(optValue);
 		permissions.add(permission);
 	}
-	
-	
-	
 }
