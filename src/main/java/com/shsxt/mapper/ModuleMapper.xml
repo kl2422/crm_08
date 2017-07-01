@@ -46,6 +46,7 @@
         <where>
             is_valid = 1 and id in (${ids})
         </where>
+         order by grade desc
     </select>
 
     <insert id="insert">

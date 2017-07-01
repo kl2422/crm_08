@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.shsxt.base.AssertUtil;
+import com.shsxt.constant.ModuleGrade;
 import com.shsxt.dao.ModuleDao;
 import com.shsxt.dao.PermissionDao;
 import com.shsxt.model.Module;
@@ -49,6 +50,8 @@ public class PermissionService {
 			permissionDao.releaseModule(roleId, moduleId);
 			// 解绑子模块
 			releaseSonModules(module, roleId);
+			// 解绑父模块
+			releaseParentModule(roleId, module);
 		}
 	}
 	
@@ -200,6 +203,23 @@ public class PermissionService {
 	}
 	
 	/**
+	 * 查询父模块
+	 * @param module
+	 * @return
+	 */
+	private List<Module> findAncestorModules(Module module) {
+		if (module.getGrade() == ModuleGrade.ROOT.getGrade()) {
+			return Collections.emptyList();
+		}
+		String treePath = module.getTreePath();
+		// ,1,2,
+		String ancestorIds = treePath.substring(treePath.indexOf(",") + 1, treePath.lastIndexOf(","));
+		List<Module> ancestorModules = moduleDao.findByIds(ancestorIds);
+		return ancestorModules;
+	}
+	
+	
+	/**
 	 * 获取子模块
 	 * @param module
 	 * @return
@@ -227,13 +247,48 @@ public class PermissionService {
 			return Collections.emptyList(); // new ArrayList<>();
 		}
 		// 先把所有的子模块解绑
-		StringBuffer sunModuleIds = new StringBuffer();
-		for (Module sunModule : sonModules) {
-			sunModuleIds.append(sunModule.getId()).append(",");
-		}
+		String moduleIds = foreachModules(sonModules);
 		// 解绑
-		permissionDao.releaseModules(roleId, sunModuleIds.substring(0, sunModuleIds.length() - 1));
+		permissionDao.releaseModules(roleId, moduleIds);
 		return sonModules;
+	}
+	
+	/**
+	 * 获取ids
+	 * @param modules
+	 * @return
+	 */
+	private static String foreachModules(List<Module> modules) {
+		if (modules == null || modules.isEmpty()) {
+			return ""; // new ArrayList<>();
+		}
+		// 先把所有的子模块解绑
+		StringBuffer moduleIds = new StringBuffer();
+		for (Module sunModule : modules) {
+			moduleIds.append(sunModule.getId()).append(",");
+		}
+		return moduleIds.substring(0, moduleIds.length() - 1);
+	}
+	
+	/**
+	 * 解绑父模块
+	 * @param roleId
+	 * @param module
+	 */
+	private void releaseParentModule(Integer roleId, Module module) {
+		List<Module> parentModules = findAncestorModules(module);
+		for (Module parentModule : parentModules) {
+			List<Module> sonModules = findSonModules(parentModule);
+			if (sonModules == null || sonModules.isEmpty()) {
+				continue;
+			}
+			String moduleIds = foreachModules(sonModules);
+			Integer count = permissionDao.countByIds(roleId, moduleIds);
+			if (count != null && count > 0) { // 子模块有关联此角色
+				continue;
+			}
+			permissionDao.releaseModule(roleId, parentModule.getId());
+		}
 	}
 	
 	private static void build(Integer roleId, Integer moduleId, 
