@@ -2,18 +2,19 @@ $(document).ready(function() {
     $("#grade").combobox({ // 层级改变
 
         // 层级改变时触发
-        onChange:function(grade) {
+        onChange:function(grade) { // select的change事件
             $('#parentId').combobox('clear');
-            $("#parentIdDiv").show();
-            $("#parentIdDiv").next().show();
+            if(grade == 0) {
+            	 $("#parentIdDiv").hide();
+            } else {
+            	 $("#parentIdDiv").show();
+            }
             $('#parentId').combobox({
                 valueField:'id', //值字段
                 textField:'moduleName', //显示的字段
-                url:'parent/' + (grade - 1),
+                url:'find_by_grade?grade=' + (grade - 1),
                 panelHeight:'auto',
-                required:true,
-                editable:true,//不可编辑，只能选择
-                value:'请选择'
+                editable:true//不可编辑，只能选择
             });
         }
     });
@@ -53,17 +54,14 @@ function openParentCombobox(row) {
     var grade = $("#grade").combobox('getValue');
     if(grade == 0) {
         $("#parentIdDiv").hide();
-        $("#parentIdDiv").next().hide();
         return;
     } else { // 修改
         $("#parentIdDiv").show();
-        $("#parentIdDiv").next().show();
         $('#parentId').combobox({
             valueField:'id', //值字段
             textField:'moduleName', //显示的字段
-            url:'parent/' + (grade - 1),
+            url:'find_by_grade?grade=' + (grade - 1),
             panelHeight:'auto',
-            required:true,
             editable:true,//不可编辑，只能选择
             value:row.parentId
         });
@@ -72,8 +70,13 @@ function openParentCombobox(row) {
 }
 
 function saveModule() {
+	var id = $("#id").val();
+	var url = "add";
+	if (id != null && $.trim(id).length > 0 && !isNaN(id)) { // 判断是否为数字
+		url = "update";
+	}
     $("#fm").form("submit", {
-        url:"add_update",
+        url: url,
         onSubmit:function() {
             if(isEmpty($("#moduleName").val())) {
                 $.messager.alert("系统提示", "请输入模块名称！");
@@ -89,7 +92,7 @@ function saveModule() {
                 $("#dlg").dialog("close");
                 $("#dg").datagrid("reload");
             } else {
-                $.messager.alert("系统提示", result.message);
+                $.messager.alert("系统提示", result.resultMessage);
                 return;
             }
         }
@@ -135,9 +138,3 @@ function deleteModule() {
         }
     });
 }
-// 关联权限
-function relatePermission(id) {
-    alert(id)
-}
-
-
