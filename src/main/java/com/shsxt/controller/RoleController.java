@@ -1,5 +1,7 @@
 package com.shsxt.controller;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.shsxt.base.BaseController;
 import com.shsxt.base.ResultInfo;
+import com.shsxt.model.Role;
 import com.shsxt.service.RoleService;
 
 @Controller
@@ -49,5 +52,12 @@ public class RoleController extends BaseController {
 	public ResultInfo delete(String ids) {
 		roleService.deleteBatch(ids);
 		return success("删除成功");
+	}
+	
+	@RequestMapping("find_all")
+	@ResponseBody
+	public List<Role> findAllList() {
+		Map<String, Object> result = roleService.findAll();
+		return (List<Role>) result.get("rows");
 	}
 }
