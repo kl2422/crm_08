@@ -7,9 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.shsxt.base.BaseController;
+import com.shsxt.base.Constant;
+import com.shsxt.base.ResultInfo;
 import com.shsxt.dto.SaleChanceQuery;
 import com.shsxt.exception.ParamException;
 import com.shsxt.model.SaleChance;
@@ -24,8 +28,15 @@ public class SaleChanceController extends BaseController {
 	private SaleChanceService saleChanceService;
 	
 	@RequestMapping("index")
-	public String index () {
-		return "sale_chance";
+//	@RequirePermissions(permission = "1010")
+	public String index (Integer state, Model model) {
+		if (state == null) {
+			return "sale_chance";
+		} else {
+			model.addAttribute("state", state);
+			return "sale_chance_assignment";
+		}
+		
 	}
 	
 	@RequestMapping("branch")
@@ -51,20 +62,22 @@ public class SaleChanceController extends BaseController {
 	
 	@RequestMapping("add_update")
 	@ResponseBody
-	public Map<String, Object> addOrUpdate(SaleChance saleChance, HttpServletRequest request) {
-		Map<String, Object> map = new HashMap<>();
+	public ResultInfo addOrUpdate(SaleChance saleChance, HttpServletRequest request) {
+//		Map<String, Object> map = new HashMap<>();
+//		ResultInfo resultInfo = new ResultInfo();
 		String userName = CookieUtil.getCookieValue(request, "userName");
 		try {
 			saleChanceService.addOrUpdate(saleChance, userName);
-			map.put("resultCode", 1);
-			map.put("resultMessage", "操作成功");
-			map.put("result", "操作成功");
+//			resultInfo.setResult("操作成功");
+//			resultInfo.setResultCode(Constant.SUCCESS_CODE);
+//			resultInfo.setResultMessage("操作成功");
+			return success(Constant.SUCCESS_MSG);
 		} catch (ParamException e) {
-			map.put("resultCode", e.getErrorCode());
-			map.put("resultMessage", e.getMessage());
-			map.put("result", e.getMessage());
+//			resultInfo.setResultCode(e.getErrorCode());
+//			resultInfo.setResult(e.getMessage());
+//			resultInfo.setResultMessage(e.getMessage());
+			return failure(e);
 		}
-		return map;
 	}
 	
 	@RequestMapping("delete")

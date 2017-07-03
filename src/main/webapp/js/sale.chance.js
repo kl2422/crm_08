@@ -47,7 +47,7 @@ function saveSaleChance() {
     }
     $("#customerName").val(customerName);
     $("#fm").form("submit",{
-        url:'add_update',
+        url: 'add_update', // 相对路径
         onSubmit: function() {
             return $(this).form("validate");
         },

@@ -12,7 +12,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="email" column="email"/>
 		<result property="phone" column="phone"/>
 		<result property="isValid" column="is_valid"/>
+		<result property="createDate" column="create_date"/>
+		<result property="updateDate" column="update_date"/>
+		
+		<collection property="roles" ofType="com.shsxt.vo.RoleVO">
+			<result property="id" column="rid"/>
+			<result property="roleName" column="role_name"/>
+		</collection>
+		
+		
 	</resultMap>
+	
     <sql id="User_Columns">
         id, user_name, password, true_name, email, phone, is_valid, create_date, update_date
     </sql>
@@ -61,22 +71,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="selectForPage" resultMap="UserResult" >
-        SELECT <include refid="User_Columns" /> FROM
-        t_user
-        <where>
-            is_valid = 1
-            <if test="@Ognl@isNotEmpty(userName)" >
-                AND  user_name LIKE  '%${userName}%'
-            </if>
-
-        </where>
+    	SELECT
+			<include refid="User_Columns_Join" />, t3.id as rid, t3.role_name
+		FROM
+			t_user t1
+		LEFT JOIN t_user_role t2 ON t1.id = t2.user_id
+		LEFT JOIN t_role t3 ON t2.role_id = t3.id 
+		where t1.is_valid = 1 and t3.is_valid = 1 
+		<if test="@Ognl@isNotEmpty(userName)" >
+			and user_name like '%${userName}%'
+		</if>
+    
     </select>
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id" >
 	    insert into t_user (
 	   		user_name, password, true_name, email, phone, is_valid, create_date, update_date
 	    ) values (
-	    	 #{userName}, #{password}, #{trueName}, #{roleName}, #{email}, #{phone}, 1, now(), now()
+	    	 #{userName}, #{password}, #{trueName}, #{email}, #{phone}, 1, now(), now()
 	    )
 	</insert>
 	

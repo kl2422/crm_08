@@ -1,5 +1,11 @@
 package com.shsxt.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.shsxt.base.BaseModel;
+import com.shsxt.vo.RoleVO;
+
 @SuppressWarnings("serial")
 public class User extends BaseModel {
 	
@@ -8,6 +14,8 @@ public class User extends BaseModel {
 	private String trueName;
 	private String email;
 	private String phone;
+	private Integer[] roleIds;
+	private List<RoleVO> roles;
 	
 	public String getUserName() {
 		return userName;
@@ -39,4 +47,25 @@ public class User extends BaseModel {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+	public Integer[] getRoleIds() {
+		if (roles != null && roles.size() > 0) { // 给roleIds赋值
+			List<Integer> roleIds = new ArrayList<>();
+			for (RoleVO roleVO : roles) {
+				roleIds.add(roleVO.getId());
+			}
+			this.roleIds = roleIds.toArray(new Integer[]{});
+		}
+		return roleIds;
+	}
+	public void setRoleIds(Integer[] roleIds) {
+		this.roleIds = roleIds;
+	}
+	public List<RoleVO> getRoles() {
+		return roles;
+	}
+	
+	public void setRoles(List<RoleVO> roles) {
+		this.roles = roles;
+	}
+	
 }

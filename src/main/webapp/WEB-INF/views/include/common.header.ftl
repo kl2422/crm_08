@@ -8,5 +8,5 @@
 <script type="text/javascript" src="${ctx}/js/jquery.cookie.js"></script>
 <script type="text/javascript" src="${ctx}/js/common.js"></script>
 <script>
-    var ctx = "${ctx}";
+    var ctx = "${ctx}/";
 </script>

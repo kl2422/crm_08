@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.shsxt.annotation.SystemLog;
+import com.shsxt.base.BaseController;
 import com.shsxt.service.UserService;
 import com.shsxt.util.LoginUserUtil;
 import com.shsxt.vo.UserLoginIdentity;
@@ -18,12 +20,14 @@ public class IndexController extends BaseController {
 	private UserService userService;
 	
 	@RequestMapping("index")
+	@SystemLog(description = "登录页面")
 	public String index() {
 		return "index";
 	}
 	
 	
 	@RequestMapping("main")
+	@SystemLog(description = "首页")
 	public String main(Model model, HttpServletRequest request) {
 		// 获取登录用户的信息
 		Integer userId = LoginUserUtil.releaseUserIdFromCookie(request);

@@ -1,6 +1,5 @@
 package com.shsxt.controller;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.shsxt.exception.ParamException;
+import com.shsxt.base.BaseController;
+import com.shsxt.base.ResultInfo;
+import com.shsxt.dto.UserQuery;
 import com.shsxt.model.User;
 import com.shsxt.service.UserService;
 import com.shsxt.vo.UserLoginIdentity;
@@ -23,6 +24,7 @@ public class UserController extends BaseController {
 	
 	@Autowired
 	private UserService userService;
+	
 	private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 //	@RequestMapping("login")
@@ -30,21 +32,10 @@ public class UserController extends BaseController {
 	@PostMapping("login")
 //	@PutMapping
 	@ResponseBody
-	public Map<String, Object> login(String userName, String password) {
+	public ResultInfo login(String userName, String password) {
 		logger.info("這是一個參數：userName={}, password={}", userName, password);
-		Map<String, Object> map = new HashMap<>();
-		try {
-			UserLoginIdentity userLoginIdentity = userService.login(userName, password);
-			map.put("resultCode", 1);
-			map.put("message", "Success");
-			map.put("result", userLoginIdentity);
-		} catch (ParamException e) {
-			map.put("resultCode", e.getErrorCode());
-			map.put("message", e.getMessage());
-			map.put("result", e.getMessage());
-		}
-		
-		return map;
+		UserLoginIdentity userLoginIdentity = userService.login(userName, password);
+		return success(userLoginIdentity);
 	}
 	
 	@RequestMapping("find_customer_manager")
@@ -54,4 +45,37 @@ public class UserController extends BaseController {
 		return users;
 	}
 	
+	
+	@RequestMapping("index")
+	public String index() {
+		return "user";
+	}
+	
+	@RequestMapping("list")
+	@ResponseBody
+	public Map<String, Object>selectForPage(UserQuery query) {
+		Map<String, Object> result = userService.selectForPage(query);
+		return result;
+	}
+	
+	@RequestMapping("add")
+	@ResponseBody
+	public ResultInfo add(User user) {
+		userService.add(user);
+		return success("添加成功");
+	}
+	
+	@RequestMapping("update")
+	@ResponseBody
+	public ResultInfo update(User user) {
+		userService.update(user);
+		return success("修改成功");
+	}
+	
+	@RequestMapping("delete")
+	@ResponseBody
+	public ResultInfo delete(String ids) {
+		userService.deleteBatch(ids);
+		return success("删除成功");
+	}
 }
