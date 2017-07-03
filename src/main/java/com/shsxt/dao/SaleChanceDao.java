@@ -41,5 +41,8 @@ public interface SaleChanceDao {
 	
 	@Update("update t_sale_chance set is_valid = 0 where id in (${ids})")
 	int delete(@Param(value="ids")String ids);
+	
+	@Update("update t_sale_chance set dev_result = #{devResult}, update_date = now() where id = #{id}")
+	void updateDevResult(@Param(value="id")Integer saleChanceId,@Param(value="devResult") int devResult);
 
 }

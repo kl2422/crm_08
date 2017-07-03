@@ -1,30 +1,32 @@
-function formatAction(val, row) {
-    return "<a href='javascript:relatePermission(" + row.id + ")'>关联权限</a>";
-}
-
 function openAddDialog() {
-    $("#dlg").dialog("open").dialog("setTitle","添加用户信息");
+    $("#dlg").dialog("open").dialog("setTitle","添加角色信息");
     $("#id").val('');
 }
 
 function openModifyDialog() {
-    var selectedRows=$("#dg").datagrid("getSelections");
+    var selectedRows = $("#dg").datagrid("getSelections");
     if(selectedRows.length != 1) {
         $.messager.alert("系统提示","请选择一条要编辑的数据！");
         return;
     }
     var row = selectedRows[0];
-    $("#dlg").dialog("open").dialog("setTitle","编辑角色信息");
+    console.log(row)
     $("#fm").form("load", row);
-    $("#id").val(row.id);
+    $("#dlg").dialog("open").dialog("setTitle","编辑角色信息");
 }
 
 function saveRole() {
+	
+	var id = $("#id").val();
+	var url = "add";
+	if (id != null && $.trim(id).length >0 && !isNaN(id)) { // 确定id是数字
+		url = "update";
+	}
     $("#fm").form("submit", {
-        url:"add_update",
+        url: url,
         onSubmit:function() {
-            if(isEmpty($("#roleName").va)) {
-                $.messager.alert("系统提示", "请选择用户角色！");
+            if(isEmpty($("#roleName").val())) {
+                $.messager.alert("系统提示", "请输入角色名称！");
                 return false;
             }
             return $(this).form("validate");
@@ -37,7 +39,7 @@ function saveRole() {
                 $("#dlg").dialog("close");
                 $("#dg").datagrid("reload");
             } else {
-                $.messager.alert("系统提示", result.message);
+                $.messager.alert("系统提示", result.resultMessage);
                 return;
             }
         }
@@ -50,14 +52,16 @@ function resetValue() {
     $("#id").val('');
 }
 
-function closeDialog(){
+function closeRoleDialog(){
     $("#dlg").dialog("close");
     resetValue();
 }
 
-function deleteRole() {
+function deleteRoles() {
 
     var strIds=[];
+    var selectedRows = $("#dg").datagrid('getSelections');
+    console.log(selectedRows);
     for(var i=0; i<selectedRows.length; i++) {
         strIds.push(selectedRows[i].id);
     }
@@ -76,12 +80,13 @@ function deleteRole() {
     });
 }
 // 关联权限
-function relatePermission() {
-    var selectedRows=$("#dg").datagrid("getSelections");
+function relatePermissions() {
+    var selectedRows = $("#dg").datagrid("getSelections");
     if(selectedRows.length != 1) {
         $.messager.alert("系统提示","请选择一条要编辑的数据！");
         return;
     }
-    var row = selectedRows[0];
-
+    var roleId = selectedRows[0].id;
+    var url = ctx + 'module/relate_permission?roleId=' + roleId;
+    window.parent.openTab('角色关联权限', url, 'icon-user');
 }

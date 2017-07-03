@@ -1,14 +1,21 @@
 package com.shsxt.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.miemiedev.mybatis.paginator.domain.PageList;
+import com.shsxt.base.AssertUtil;
 import com.shsxt.dao.UserDao;
+import com.shsxt.dao.UserRoleDao;
+import com.shsxt.dto.UserQuery;
 import com.shsxt.exception.ParamException;
 import com.shsxt.model.User;
+import com.shsxt.model.UserRole;
 import com.shsxt.util.MD5Util;
 import com.shsxt.util.UserIDBase64;
 import com.shsxt.vo.UserLoginIdentity;
@@ -18,6 +25,8 @@ public class UserService {
 	
 	@Autowired
 	private UserDao userDao;
+	@Autowired
+	private UserRoleDao userRoleDao;
 	
 	/**
 	 * 用户登录
@@ -27,17 +36,20 @@ public class UserService {
 	public UserLoginIdentity login(String userName, String password) {
 		
 		// 非空验证
-		if (StringUtils.isBlank(userName)) {
-			throw new ParamException(100, "请输入用户名");
-		}
-		if (StringUtils.isBlank(password)) {
-			throw new ParamException(101, "请输入密码");
-		}
+		AssertUtil.isNotEmpty(userName, "请输入用户名");
+		AssertUtil.isNotEmpty(password, 100, "请输入密码");
+//		if (StringUtils.isBlank(userName)) {
+//			throw new ParamException(100, "请输入用户名");
+//		}
+//		if (StringUtils.isBlank(password)) {
+//			throw new ParamException(101, "请输入密码");
+//		}
 		// 根据用户名查询用户在验证
 		User user = userDao.findByUserName(userName.trim());
-		if (user == null) {
-			throw new ParamException(102, "用户名密码错误，请重新输入");
-		}
+		AssertUtil.notNull(user);
+//		if (user == null) {
+//			throw new ParamException(102, "用户名密码错误，请重新输入");
+//		}
 		// 密码验证：需要MD5加密
 		if (!MD5Util.md5Method(password).equals(user.getPassword())) {
 			throw new ParamException(103, "用户名密码错误，请重新输入");
@@ -72,6 +84,78 @@ public class UserService {
 	public List<User> findCustomerManager() {
 		return userDao.findByRoleName("客户经理");
 	}
+	
+	/**
+	 * 分页查询
+	 * @param query
+	 * @return
+	 */
+	public Map<String, Object> selectForPage(UserQuery query) {
+		
+		PageList<User> users = userDao.selectForPage(query, query.buildPageBounds());
+//		for(User user : users) {
+//			//
+//		}
+		Map<String, Object> result = new HashMap<>();
+		result.put("rows", users);
+		result.put("total", users.getPaginator().getTotalCount());
+		return result;
+	}
+	
+	/**
+	 * 添加用户
+	 * @param user
+	 */
+	public void add(User user) {
+		// 非空验证 用户名 密码 真实姓名 电话 邮箱 角色
+		checkParams(user);
+		String userName = user.getUserName();
+		// 用户名唯一验证
+		User userByUserName = userDao.findByUserName(userName);
+		AssertUtil.isTrue(userByUserName != null, "该用户名已存在");
+		// 邮箱、手机号唯一验证 TODO
+		String password = user.getPassword();
+		// 密码加密
+		password = MD5Util.md5Method(password);
+		user.setPassword(password);
+		// 插入数据库
+		userDao.insert(user);
+		// 关联角色
+		saveUserRoles(user);
+	}
+	
+	/**
+	 * 更新
+	 * @param user
+	 */
+	public void update(User user) {
+		Integer id = user.getId();
+		AssertUtil.intIsNotEmpty(id, "请选择一条记录进行修改");
+		checkParams(user);
+		User userFromDB = userDao.findById(user.getId());
+		if (!userFromDB.getUserName().equals(user.getUserName())) {
+			// 用户名唯一验证
+			User userByUserName = userDao.findByUserName(user.getUserName());
+			AssertUtil.isTrue(userByUserName != null, "该用户名已存在");
+		}
+		// TODO 手机号以及邮箱唯一验证
+		// 更新
+		userDao.update(user);
+		// 关联角色
+		// 先删除 在关联
+		userRoleDao.deleteUserRoles(user.getId());
+		saveUserRoles(user);
+	}
+	
+	/**
+	 * 删除
+	 * @param ids
+	 */
+	public void deleteBatch(String ids) {
+		AssertUtil.isNotEmpty(ids, "请选择删除的记录");
+		userDao.deleteBatch(ids);
+		// 删除user_role
+	}
 
 	/**
 	 * 构建登录信息
@@ -84,6 +168,40 @@ public class UserService {
 		userLoginIdentity.setRealName(user.getTrueName());
 		userLoginIdentity.setUserName(user.getUserName());
 		return userLoginIdentity;
+	}
+	
+	/**
+	 * 基本参数验证
+	 * @param user
+	 */
+	private static void checkParams(User user) {
+		String userName = user.getUserName();
+		AssertUtil.isNotEmpty(userName, "请输入用户名");
+		String password = user.getPassword();
+		AssertUtil.isNotEmpty(password, "请输入密码");
+		String realName = user.getTrueName();
+		AssertUtil.isNotEmpty(realName, "请输入真实姓名");
+		String phone = user.getPhone();
+		AssertUtil.isNotEmpty(phone, "请输入手机号");
+		String email = user.getEmail();
+		AssertUtil.isNotEmpty(email, "请输入邮箱");
+		Integer[] roleIds = user.getRoleIds();
+		AssertUtil.isTrue(roleIds == null || roleIds.length == 0, "请选择角色");
+	}
+	
+	/**
+	 * 插入角色
+	 * @param user
+	 */
+	private void saveUserRoles(User user) {
+		List<UserRole> userRoles = new ArrayList<>();
+		for (Integer roleId : user.getRoleIds()) {
+			UserRole userRole = new UserRole();
+			userRole.setRoleId(roleId);
+			userRole.setUserId(user.getId());
+			userRoles.add(userRole);
+		}
+		userRoleDao.insertBatch(userRoles);
 	}
 	
 }

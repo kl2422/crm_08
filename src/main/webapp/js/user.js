@@ -4,12 +4,12 @@ function searchUser() {
     });
 }
 
-function openUserAddDialog() {
+function openAddDialog() {
     $("#dlg").dialog("open").dialog("setTitle","添加用户信息");
-    $("#userId").val('');
+    $("#id").val('');
 }
 
-function openUserModifyDialog() {
+function openModifyDialog() {
     var selectedRows=$("#dg").datagrid("getSelections");
     if(selectedRows.length != 1) {
         $.messager.alert("系统提示","请选择一条要编辑的数据！");
@@ -22,10 +22,15 @@ function openUserModifyDialog() {
 }
 
 function saveUser() {
+	var id = $("#id").val();
+	var url = "add";
+	if (id != null && $.trim(id).length > 0 && !isNaN(id)) { // 判断是否为数字
+		url = "update";
+	}
     $("#fm").form("submit", {
-        url:"add_update",
+        url: url,
         onSubmit:function() {
-            if($("#roleName").combobox("getValue") == "") {
+            if($("#roleIds").combobox("getValue") == "") {
                 $.messager.alert("系统提示", "请选择用户角色！");
                 return false;
             }
@@ -52,11 +57,11 @@ function resetValue() {
     $("#trueName").val("");
     $("#email").val("");
     $("#phone").val("");
-    $("#roleName").combobox("setValue","");
-    $("#userId").val('');
+    $("#roleIds").combobox("setValue","");
+    $("#id").val('');
 }
 
-function closeUserDialog(){
+function closeDialog(){
     $("#dlg").dialog("close");
     resetValue();
 }

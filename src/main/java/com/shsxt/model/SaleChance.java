@@ -3,6 +3,7 @@ package com.shsxt.model;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.shsxt.base.BaseModel;
 
 @SuppressWarnings("serial")
 public class SaleChance extends BaseModel {

@@ -12,7 +12,8 @@ public class SaleChanceBuilder {
 
 	private static Logger logger = LoggerFactory.getLogger(SaleChanceBuilder.class);
 	
-	private static String COMMON_COLUMN = "t.id, t.customer_name, t.overview, t.link_man, t.state, t.customer_id, t.chance_source, t.assign_man,"
+
+	private static String COMMON_COLUMN = "t.id, t.customer_name, t.overview, t.link_man, t.state, t.customer_id, t.chance_source, t.assign_man, t.assign_time,"
 					+ " t.link_phone, t.create_man, t.create_date, t.cgjl, t.description, t.dev_result";
 
 	public String selectForPageSql (final SaleChanceQuery query) {
@@ -32,6 +33,9 @@ public class SaleChanceBuilder {
 			}
 			if (query.getState() != null) {
 				AND().WHERE("state = #{state}");
+			}
+			if (query.getDevResult() != null) {
+				AND().WHERE("dev_result = #{devResult}");
 			}
 			ORDER_BY("id desc");
 		}};
