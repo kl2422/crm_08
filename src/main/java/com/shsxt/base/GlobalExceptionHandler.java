@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.shsxt.exception.ParamException;
+import com.shsxt.exception.UnAuthPermissionException;
 
 /**
  * 全局异常处理
@@ -15,12 +16,22 @@ import com.shsxt.exception.ParamException;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends BaseController {
 	
+//	@Autowired
+//	private LogService logService;
+	
 	private static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 	
 	@ExceptionHandler(value = ParamException.class)
 	public ResultInfo handlerParamException(ParamException paramException) {
 		logger.error("参数异常：{}", paramException);
+//		logService.addLog(log); // 错误日志收集
 		return failure(paramException);
+	}
+	
+	@ExceptionHandler(value = UnAuthPermissionException.class)
+	public ResultInfo handlerUnAuthPermissionException(UnAuthPermissionException exception) {
+		logger.error("异常：{}", exception);
+		return failure(exception.getPermissionCode(), exception.getMessage());
 	}
 	
 	@ExceptionHandler(value = Exception.class)
@@ -46,5 +57,7 @@ public class GlobalExceptionHandler extends BaseController {
 		}
 		return failure("未知异常");
 	}
+	
+	
 	
 }

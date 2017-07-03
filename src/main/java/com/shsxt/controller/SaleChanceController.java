@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.shsxt.annotation.RequirePermissions;
 import com.shsxt.base.BaseController;
 import com.shsxt.base.Constant;
 import com.shsxt.base.ResultInfo;
@@ -28,6 +29,7 @@ public class SaleChanceController extends BaseController {
 	private SaleChanceService saleChanceService;
 	
 	@RequestMapping("index")
+//	@RequirePermissions(permission = "1010")
 	public String index (Integer state, Model model) {
 		if (state == null) {
 			return "sale_chance";
