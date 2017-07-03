@@ -83,4 +83,15 @@ public class CustomerService {
 		AssertUtil.isNotEmpty(ids, "请选择记录进行删除");
 		customerDao.delete(ids);
 	}
+	
+	/**
+	 * 根据ID查询
+	 * @param customerId
+	 * @return
+	 */
+	public Customer findById(Integer customerId) {
+		AssertUtil.intIsNotEmpty(customerId, "请选择客户信息");
+		Customer customer = customerDao.findById(customerId);
+		return customer;
+	}
 }

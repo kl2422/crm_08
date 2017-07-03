@@ -1,17 +1,33 @@
 $(function() {
-    var cusId = $("#cusId").val();
-    $.post(ctx + "/customer/detail",{id:cusId}, function(result) {
-        $("#khno").val(result.khno);
-        $("#name").val(result.name);
-    });
-
+	var cusId = $("#cusId").val();
     $("#dg").edatagrid({
-        url:ctx + '/contact/list?cusId=' + cusId,
-        saveUrl:ctx + '/contact/add_update?cusId='+ cusId,
-        updateUrl:ctx + '/contact/add_update',
-        destroyUrl:ctx + '/contact/delete',
-        pagination: true,
-        pageSize: 10
+        url: 'list?customerId=' + cusId,
+        saveUrl: 'add?cusId='+ cusId,
+        updateUrl: 'update',
+        destroyUrl: 'delete',
+        pagination: true, // 分页
+        pageSize: 10 // 每页条数
 
     });
 });
+
+// 添加一行
+function addContact() {
+	$('#dg').edatagrid('addRow');
+}
+
+// 保存行
+function saveContact() {
+	$('#dg').edatagrid('saveRow');
+	$('#dg').edatagrid('reload');
+}
+
+// 删除行
+function deleteContact() {
+	$('#dg').edatagrid('destroyRow');
+}
+
+//撤销行
+function cancelRow() {
+	$('#dg').edatagrid('cancelRow');
+}

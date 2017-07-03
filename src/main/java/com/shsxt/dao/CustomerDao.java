@@ -26,7 +26,7 @@ public interface CustomerDao {
 	
 	void insert(Customer customer);
 	
-	@Select("select id, name from t_customer where is_valid = 1 and id = #{id}")
+	@Select("select id, name, khno from t_customer where is_valid = 1 and id = #{id}")
 	Customer findById(@Param(value="id")Integer id);
 	
 	void update(Customer customer);
