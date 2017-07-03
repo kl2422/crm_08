@@ -1,59 +1,45 @@
-var url;
+// 搜索
 function searchCustomer() {
-    $("#dg").datagrid('load', {
-        "khno":$("#s_khno").val(),
-        "name":$("#s_name").val()
-    });
+	var customerNo = $("#s_customerNo").val();
+	var customerName = $("#s_customerName").val();
+	var data = {'customerNo': customerNo, "customerName": customerName};
+	$("#dg").datagrid('load', data);
 }
 
-function openCustomerAddDialog() {
-    $("#dlg").dialog("open").dialog("setTitle","添加客户信息");
+function openAddDialog() {
+	$("#dlg").dialog('open').dialog('setTitle', "添加客户信息");
 }
 
-function openCustomerModifyDialog() {
-    var selectedRows = $("#dg").datagrid("getSelections");
-    if(selectedRows.length!=1) {
-        $.messager.alert("系统提示","请选择一条要编辑的数据！");
-        return;
-    }
-    var row = selectedRows[0];
-    $("#dlg").dialog("open").dialog("setTitle","编辑客户信息");
-    $("#fm").form("load",row);
-    $("#customerId").val(row.id);
+function openModifyDialog() {
+	 // form 表单赋值 获取选中行
+	var selectedRows = $("#dg").datagrid('getSelections');
+	if (selectedRows == null || selectedRows.length != 1) {
+		$.messager.alert("系统提示", "只能选择一条进行修改");
+		return;
+	}
+	var row = selectedRows[0];
+	$("#fm").form('load', row); // form 赋值
+	$("#dlg").dialog('open').dialog('setTitle', "修改客户信息");
 }
 
+// 保存
 function saveCustomer() {
+	
+	var url = "add";
+	var id = $("#id").val();
+	if (id != null && $.trim(id).length > 0 && !isNaN(id)) { // 判断是否为数字
+		url = "update";
+	}
     $("#fm").form("submit",{
-        url:"add_update",
-        onSubmit : function() {
-            if($("#area").combobox("getValue") == "") {
-                $.messager.alert("系统提示","请选择客户地区！");
-                return false;
-            }
-            if($("#cusManager").combobox("getValue") == "") {
-                $.messager.alert("系统提示","请选择客户经理！");
-                return false;
-            }
-            if($("#level").combobox("getValue")=="") {
-                $.messager.alert("系统提示","请选择客户等级！");
-                return false;
-            }
-            if($("#myd").combobox("getValue")=="") {
-                $.messager.alert("系统提示","请选择客户满意度！");
-                return false;
-            }
-            if($("#xyd").combobox("getValue")=="") {
-                $.messager.alert("系统提示","请选择客户信用度！");
-                return false;
-            }
+        url: url, // 相对路径
+        onSubmit: function() {
             return $(this).form("validate");
         },
-        success : function(result) {
+        success:function(result) {
             result = JSON.parse(result);
             if(result.resultCode == 1) {
-                $.messager.alert("系统提示","保存成功！");
-                resetValue();
-                $("#dlg").dialog("close");
+                $.messager.alert("系统提示", "保存成功！");
+                closeCustomerDialog();
                 $("#dg").datagrid("reload");
             }else{
                 $.messager.alert("系统提示","保存失败！");
@@ -63,82 +49,39 @@ function saveCustomer() {
     });
 }
 
-function resetValue() {
-    $("#customerId").val('');
-    $("#name").val("");
-    $("#area").combobox("setValue","");
-    $("#cusManager").combobox("setValue","");
-    $("#level").combobox("setValue","");
-    $("#myd").combobox("setValue","");
-    $("#xyd").combobox("setValue","");
-    $("#address").val("");
-    $("#postCode").val("");
-    $("#phone").val("");
-    $("#fax").val("");
-    $("#webSite").val("");
-    $("#yyzzzch").val("");
-    $("#fr").val("");
-    $("#zczj").val("");
-    $("#nyye").val("");
-    $("#khyh").val("");
-    $("#khzh").val("");
-    $("#dsdjh").val("");
-    $("#gsdjh").val("");
-}
-
-function closeCustomerDialog(){
-    $("#dlg").dialog("close");
-    resetValue();
-}
-
 function deleteCustomer() {
-    var selectedRows=$("#dg").datagrid("getSelections");
-    if(selectedRows.length==0) {
-        $.messager.alert("系统提示","请选择要删除的数据！");
-        return;
-    }
-    var strIds=[];
-    for(var i=0;i<selectedRows.length;i++) {
-        strIds.push(selectedRows[i].id);
-    }
-    var ids=strIds.join(",");
-    $.messager.confirm("系统提示","您确定要删除这<font color=red>"+selectedRows.length+"</font>条数据吗？", function(r) {
-        if(r){
-            $.post("\delete",{ids:ids},function(result){
-                if(result.resultCode == 1) {
-                    $.messager.alert("系统提示","数据已成功删除！");
-                    $("#dg").datagrid("reload");
-                }else{
-                    $.messager.alert("系统提示","数据删除失败，请联系系统管理员！");
-                }
-            });
-        }
-    });
+	var selectedRows = $("#dg").datagrid('getSelections');
+	if (selectedRows == null || selectedRows.length < 1) {
+		$.messager.alert("系统提示", "至少选择一条进行删除");
+		return;
+	}
+	var ids = [];
+	for (var i = 0; i < selectedRows.length; i++) {
+		ids.push(selectedRows[i].id);
+	}
+	var tips = "您确定要删除<font color='red'>"+ ids.length +"</font>条记录吗？";
+	$.messager.confirm("系统提示", tips, function(r){
+		if (r) {
+			$.post('delete', {"ids": ids.join(",")}, function(resp) {
+				if (resp.resultCode == 1) {
+					alert(resp.resultMessage);
+					closeCustomerDialog();
+					$("#dg").datagrid("reload");
+				} else {
+					alert(resp.resultMessage);
+				}
+			});
+		}
+	});
 }
 
-function openCustomerLinkMan() {
-    var selectedRows=$("#dg").datagrid("getSelections");
-    if(selectedRows.length != 1) {
-        $.messager.alert("系统提示","请选择一条要管理的数据！");
-        return;
-    }
-    window.parent.openTab('客户联系人管理','../link_man/index?cusId=' + selectedRows[0].id,'icon-lxr');
+// 关闭
+function closeCustomerDialog() {
+	resetValue();
+	$("#dlg").dialog('close');
 }
 
-function openCustomerContact() {
-    var selectedRows = $("#dg").datagrid("getSelections");
-    if(selectedRows.length != 1) {
-        $.messager.alert("系统提示","请选择一条要管理的数据！");
-        return;
-    }
-    window.parent.openTab('客户交往记录管理','../contact/index?cusId='+selectedRows[0].id,'icon-jwjl');
-}
-
-function openCustomerOrder() {
-    var selectedRows = $("#dg").datagrid("getSelections");
-    if(selectedRows.length != 1) {
-        $.messager.alert("系统提示","请选择一条要管理的数据！");
-        return;
-    }
-    window.parent.openTab('客户历史订单查询','order/index?cusId=' + selectedRows[0].id, 'icon-lsdd');
+// 重新
+function resetValue() {
+	$("#fm").form('reset');
 }

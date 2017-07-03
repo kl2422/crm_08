@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.shsxt.annotation.RequirePermissions;
 import com.shsxt.base.BaseController;
 import com.shsxt.base.Constant;
 import com.shsxt.base.ResultInfo;
