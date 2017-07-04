@@ -31,7 +31,7 @@ public interface CustomerDao {
 	
 	void update(Customer customer);
 	
-	@Update("update t_customer set is_valid = 0 where id in (${ids})")
+	@Update("update t_customer set is_valid = 0, update_date = now() where id in (${ids})")
 	void delete(@Param(value="ids")String ids);
 	
 	
@@ -39,10 +39,10 @@ public interface CustomerDao {
 	
 	List<Customer> findLossCustomerNoOrderLongTime();
 	
-	@Update("update t_customer set state = 2 where id in (${ids})")
+	@Update("update t_customer set state = 2, update_date = now() where id in (${ids})")
 	void updateStates(@Param(value="ids")String ids);
 	
-	@Update("update t_customer set state = 1 where khno = #{cusNo}")
+	@Update("update t_customer set state = 1, update_date = now() where khno = #{cusNo}")
 	void updateLossState(@Param(value="cusNo")String cusNo);
 
 }

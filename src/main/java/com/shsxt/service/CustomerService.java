@@ -1,14 +1,12 @@
 package com.shsxt.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,7 @@ import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import com.shsxt.base.AssertUtil;
 import com.shsxt.dao.CustomerDao;
 import com.shsxt.dao.CustomerLossDao;
+import com.shsxt.dao.OrderDao;
 import com.shsxt.dto.CustomerQuery;
 import com.shsxt.model.Customer;
 import com.shsxt.model.CustomerLoss;
@@ -31,6 +30,8 @@ public class CustomerService {
 	private CustomerDao customerDao;
 	@Autowired
 	private CustomerLossDao customerLossDao;
+	@Autowired
+	private OrderDao orderDao;
 	
 	public List<CustomerVO> findAll() {
 		return customerDao.findAll();
@@ -111,11 +112,11 @@ public class CustomerService {
 		// 六个月没有下个单的客户
 		List<CustomerLoss> customerLosses = new ArrayList<>();
 		List<Customer> customers = customerDao.findLossCustomer();
-		List<Integer> customerIds = buildCustomerLoss(customers, customerLosses);
+		List<Integer> customerIds = buildCustomerLoss(customers, customerLosses, 0);
 		
 		// 六个月前可能下过单
 		List<Customer> customerNoOrderLongTimes = customerDao.findLossCustomerNoOrderLongTime();
-		List<Integer> customerMoreIds = buildCustomerLoss(customerNoOrderLongTimes, customerLosses);
+		List<Integer> customerMoreIds = buildCustomerLoss(customerNoOrderLongTimes, customerLosses, 1);
 		customerIds.addAll(customerMoreIds);
 		
 		// 插入数据
@@ -140,7 +141,7 @@ public class CustomerService {
 	 * @param customerLosses
 	 */
 	private List<Integer> buildCustomerLoss(List<Customer> customers, 
-			List<CustomerLoss> customerLosses) {
+			List<CustomerLoss> customerLosses, int type) {
 		if (customers == null || customers.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -152,6 +153,11 @@ public class CustomerService {
 			customerLoss.setCusName(customer.getName());
 			customerLoss.setCusNo(customer.getKhno());
 			customerLoss.setIsValid(1);
+			if (type == 1) { // 需要查询最后一次订单时间
+				Date lastOrderTime = orderDao.findCustomerOrderDate(customer.getId());
+				customerLoss.setLastOrderTime(lastOrderTime);
+			}
+			
 			customerLosses.add(customerLoss);
 			customerIds.add(customer.getId());
 		}

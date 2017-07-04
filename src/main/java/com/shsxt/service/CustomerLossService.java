@@ -54,5 +54,4 @@ public class CustomerLossService {
 		AssertUtil.isTrue(id == null || id < 1, "请选择记录");
 		return customerLossDao.loadById(id);
 	}
-
 }

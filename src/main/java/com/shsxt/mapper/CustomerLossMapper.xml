@@ -48,9 +48,7 @@
     <update id="update">
         update t_customer_loss
         <set>
-            <if test="confirmLossTime != null">
-                confirm_loss_time = #{confirmLossTime},
-            </if>
+                confirm_loss_time = now(),
             <if test="@Ognl@isNotEmpty(lossReason)">
                 loss_reason = #{lossReason},
             </if>
