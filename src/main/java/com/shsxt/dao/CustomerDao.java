@@ -15,7 +15,7 @@ import com.shsxt.vo.CustomerVO;
 
 public interface CustomerDao {
 	
-	@Select("select id, name from t_customer where is_valid = 1 and state = 0")
+	@Select("select id, name from t_customer where is_valid = 1 and state in (0, 2)")
 	@ResultType(value = CustomerVO.class)
 	List<CustomerVO> findAll();
 
@@ -33,5 +33,16 @@ public interface CustomerDao {
 	
 	@Update("update t_customer set is_valid = 0 where id in (${ids})")
 	void delete(@Param(value="ids")String ids);
+	
+	
+	List<Customer> findLossCustomer();
+	
+	List<Customer> findLossCustomerNoOrderLongTime();
+	
+	@Update("update t_customer set state = 2 where id in (${ids})")
+	void updateStates(@Param(value="ids")String ids);
+	
+	@Update("update t_customer set state = 1 where khno = #{cusNo}")
+	void updateLossState(@Param(value="cusNo")String cusNo);
 
 }

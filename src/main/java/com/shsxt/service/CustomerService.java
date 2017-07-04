@@ -1,10 +1,14 @@
 package com.shsxt.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,8 +17,10 @@ import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import com.shsxt.base.AssertUtil;
 import com.shsxt.dao.CustomerDao;
+import com.shsxt.dao.CustomerLossDao;
 import com.shsxt.dto.CustomerQuery;
 import com.shsxt.model.Customer;
+import com.shsxt.model.CustomerLoss;
 import com.shsxt.util.DateUtil;
 import com.shsxt.vo.CustomerVO;
 
@@ -23,6 +29,8 @@ public class CustomerService {
 	
 	@Autowired
 	private CustomerDao customerDao;
+	@Autowired
+	private CustomerLossDao customerLossDao;
 	
 	public List<CustomerVO> findAll() {
 		return customerDao.findAll();
@@ -93,5 +101,60 @@ public class CustomerService {
 		AssertUtil.intIsNotEmpty(customerId, "请选择客户信息");
 		Customer customer = customerDao.findById(customerId);
 		return customer;
+	}
+	
+	/**
+	 * 定时抓取流失客户
+	 */
+	public void runCustomerLoss() {
+		
+		// 六个月没有下个单的客户
+		List<CustomerLoss> customerLosses = new ArrayList<>();
+		List<Customer> customers = customerDao.findLossCustomer();
+		List<Integer> customerIds = buildCustomerLoss(customers, customerLosses);
+		
+		// 六个月前可能下过单
+		List<Customer> customerNoOrderLongTimes = customerDao.findLossCustomerNoOrderLongTime();
+		List<Integer> customerMoreIds = buildCustomerLoss(customerNoOrderLongTimes, customerLosses);
+		customerIds.addAll(customerMoreIds);
+		
+		// 插入数据
+		if (customerLosses != null && !customerLosses.isEmpty()) {
+			customerLossDao.insertBatch(customerLosses);
+		}
+		
+		// 更新客户的状态 update t_customer set state = 2 where id in (1,2,3)
+		if (customerIds != null && !customerIds.isEmpty()) {
+			StringBuffer sb = new StringBuffer();
+			for (Integer customerId : customerMoreIds) {
+				sb.append(customerId).append(",");
+			}
+			customerDao.updateStates(sb.substring(0, sb.length() - 1));
+		}
+		
+	}
+	
+	/**
+	 * 构建
+	 * @param customers
+	 * @param customerLosses
+	 */
+	private List<Integer> buildCustomerLoss(List<Customer> customers, 
+			List<CustomerLoss> customerLosses) {
+		if (customers == null || customers.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<Integer> customerIds = new ArrayList<>();
+		for (Customer customer : customers) {
+			CustomerLoss customerLoss = new CustomerLoss();
+			customerLoss.setCreateDate(new Date());
+			customerLoss.setCusManager(customer.getCusManager());
+			customerLoss.setCusName(customer.getName());
+			customerLoss.setCusNo(customer.getKhno());
+			customerLoss.setIsValid(1);
+			customerLosses.add(customerLoss);
+			customerIds.add(customer.getId());
+		}
+		return customerIds;
 	}
 }
