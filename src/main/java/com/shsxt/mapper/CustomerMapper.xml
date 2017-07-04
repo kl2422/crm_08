@@ -124,5 +124,36 @@
 		WHERE id = #{id}
 	</update>
 	
+	<select id="findLossCustomer" resultType="customer">
+		SELECT
+			t.id, t.khno, t.cus_manager, t.`name`
+		FROM
+			t_customer t
+		WHERE
+			DATE_ADD(update_date, INTERVAL 6 MONTH) &lt;= NOW()
+			AND state = 0
+			AND id NOT IN (
+				SELECT
+					cus_id
+				FROM
+					t_customer_order
+			)
+	</select>
 	
+	<select id="findLossCustomerNoOrderLongTime" resultType="customer">
+		SELECT
+			t.id, t.khno, t.cus_manager, t.`name`
+		FROM
+			t_customer t
+		WHERE
+			id IN (
+				SELECT
+					cus_id
+				FROM
+					t_customer_order
+				WHERE
+					DATE_ADD(update_date, INTERVAL 6 MONTH) &lt;= NOW()
+				)
+		and state = 0
+	</select>
 </mapper>
