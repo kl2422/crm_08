@@ -88,18 +88,30 @@ function resetValue() {
 
 function openCustomerLinkMan() {
 	var id = loadSelectedId();
+	if (id == null) {
+		$.messager.alert("系统提示", "只能选择一条");
+		return;
+	}
 	var url = ctx + "linkman/index?customerId=" + id;
 	window.parent.openTab('联系人管理', url, 'icon-lxr');
 }
 
 function openCustomerContact() {
 	var id = loadSelectedId();
+	if (id == null) {
+		$.messager.alert("系统提示", "只能选择一条");
+		return;
+	}
 	var url = ctx + "contact/index?customerId=" + id;
 	window.parent.openTab('交往记录管理', url, 'icon-jwjl');
 }
 
 function openCustomerOrder() {
 	var id = loadSelectedId();
+	if (id == null) {
+		$.messager.alert("系统提示", "只能选择一条");
+		return;
+	}
 	var url = ctx + "order/index?customerId=" + id;
 	window.parent.openTab('历史订单查看', url, 'icon-lsdd');
 }
@@ -107,7 +119,6 @@ function openCustomerOrder() {
 function loadSelectedId() {
 	var selectedRows = $("#dg").datagrid('getSelections');
 	if (selectedRows == null || selectedRows.length != 1) {
-		$.messager.alert("系统提示", "只能选择一条");
 		return;
 	}
 	var row = selectedRows[0];

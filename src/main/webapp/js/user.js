@@ -57,7 +57,7 @@ function resetValue() {
     $("#trueName").val("");
     $("#email").val("");
     $("#phone").val("");
-    $("#roleIds").combobox("setValue","");
+    $("#roleIds").combobox("clear");
     $("#id").val('');
 }
 

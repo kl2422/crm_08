@@ -8,13 +8,13 @@ function openCustomerServiceAssignDialog() {
     $("#dlg").dialog("open").dialog("setTitle", "分配客服服务");
     $("#fm").form("load", row);
     $("#state").val("已分配");
-    $("#assignTime").val(new Date().format("yyyy-MM-dd hh:mm:ss"));
+    $("#assignTime").val(new Date().format("yyyy-MM-dd hh:mm:ss")); // 可以后台处理
     $("#id").val(row.id);
 }
 
 function saveCustomerService(){
     $("#fm").form("submit",{
-        url: ctx + "/customer_serve/add_update",
+        url: ctx + "customer_serve/add_update",
         onSubmit:function() {
             return $(this).form("validate");
         },

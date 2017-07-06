@@ -7,7 +7,7 @@ function openCustomerServiceProceDialog() {
     var row = selectedRows[0];
     $("#dlg").dialog("open").dialog("setTitle","处理客服服务");
     $("#fm").form("load",row);
-    $("#serviceProceTime").val(new Date().format("yyyy-MM-dd hh:mm:ss"));
+    $("#serviceProceTime").val(new Date().format("yyyy-MM-dd hh:mm:ss")); //  
     $("#serviceProcePeople").val($.cookie("userName"));
     $("#state").val("已处理");
     $("#id").val(row.id);
@@ -15,7 +15,7 @@ function openCustomerServiceProceDialog() {
 
 function saveCustomerServiceProce() {
     $("#fm").form("submit",{
-        url: ctx + "/customer_serve/add_update",
+        url: ctx + "customer_serve/add_update",
         onSubmit:function() {
             return $(this).form("validate");
         },

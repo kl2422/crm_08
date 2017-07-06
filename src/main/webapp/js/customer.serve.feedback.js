@@ -13,7 +13,7 @@ function openCustomerServiceFeedbackDialog(){
 
 function saveCustomerServiceFeedback() {
     $("#fm").form("submit", {
-        url: ctx + "/customer_serve/add_update",
+        url: ctx + "customer_serve/add_update",
         onSubmit:function() {
             if($("#myd").combobox("getValue")==""){
                 $.messager.alert("系统提示","请选择客户满意度！");
