@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
@@ -35,5 +36,8 @@ public interface UserDao {
 	void update(User user);
 	
 	void deleteBatch(@Param(value="ids")String ids);
+	
+	@Update("update t_user set password = #{password} where id = #{userId}")
+	int updatePassword(@Param(value="userId")Integer id, @Param(value="password")String newPwd);
 	
 }
