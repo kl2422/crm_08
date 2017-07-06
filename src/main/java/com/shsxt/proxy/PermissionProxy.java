@@ -8,6 +8,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +33,8 @@ public class PermissionProxy {
 	@Autowired
 	private PermissionService permissionService;
 	
+	private static Logger logger = LoggerFactory.getLogger(PermissionProxy.class);
+	
 	/**
 	 * 定义切入点
 	 */
@@ -45,7 +49,11 @@ public class PermissionProxy {
 		// 用户是否登录
 		Integer userId = LoginUserUtil.releaseUserIdFromCookie(request);
 		String uri = request.getRequestURI();
-		if ("/index".equals(uri) || "/user/login".equals(uri)) { // 放行
+		String ctx = request.getContextPath();
+		logger.info("uri = {}, ctx = {}", uri, ctx);
+		String indexUri = ctx + "/index";
+		String loginUri = ctx + "/user/login";
+		if (indexUri.equals(uri) || loginUri.equals(uri)) { // 放行
 			return pjp.proceed();
 		}
 		if (userId == null || userId < 1) {
