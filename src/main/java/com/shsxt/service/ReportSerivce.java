@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.github.miemiedev.mybatis.paginator.domain.Paginator;
 import com.shsxt.dao.CustomerDao;
+import com.shsxt.dao.CustomerServeDao;
 import com.shsxt.dto.ReportGxQuery;
+import com.shsxt.vo.CustomerFw;
 import com.shsxt.vo.CustomerGc;
 import com.shsxt.vo.CustomerGx;
 
@@ -19,6 +21,9 @@ public class ReportSerivce {
 	
 	@Autowired
 	private CustomerDao customerDao;
+	
+	@Autowired
+	private CustomerServeDao customerServeDao;
 
 	public Map<String, Object> findKhgx(ReportGxQuery query) {
 		
@@ -33,6 +38,11 @@ public class ReportSerivce {
 
 	public List<CustomerGc> findKhgc() {
 		return customerDao.khgcReport();
+	}
+
+	public List<CustomerFw> khfwfx() {
+		
+		return customerServeDao.findCustomerFw();
 	}
 
 }

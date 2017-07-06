@@ -8,32 +8,7 @@
     <title>客户关系管理系统</title>
     <script>
         $(function () {
-        	//findCustomerFw();
-        
-            //客户服务分析
-            var data = [];
-            $.ajax({
-            	url: 'khfwfx',
-            	dataType: 'json',
-            	data: {},
-            	async: false,
-            	success: function(resp) {
-            		for (var i = 0; i < resp.length; i++) {
-            			var serveType = resp[i].serveType;
-            			var amount = resp[i].amount;
-            			var result = {name: serveType, y: amount};
-            			if (i == 0) {
-            				result.sliced = true,
-                			result.selected = true
-            			}
-            			data.push(result);
-            		}
-            		console.log(JSON.stringify(data));	
-            	},
-            	error: function() {},
-            	before: function() {}
-            })
-            
+            // 客户服务分析
             new Highcharts.Chart({
 		        chart: {
 		            renderTo: 'container',
@@ -64,7 +39,27 @@
 		        series: [{
 		            name: 'Brands',
 		            colorByPoint: true,
-		            data: data
+		            data: [{
+		                name: 'Microsoft Internet Explorer',
+		                y: 56.33
+		            }, {
+		                name: 'Chrome',
+		                y: 24.03,
+		                sliced: true,
+		                selected: true
+		            }, {
+		                name: 'Firefox',
+		                y: 10.38
+		            }, {
+		                name: 'Safari',
+		                y: 4.77
+		            }, {
+		                name: 'Opera',
+		                y: 0.91
+		            }, {
+		                name: 'Proprietary or Undetectable',
+		                y: 0.2
+		            }]
 		        }]
 		    });
         });

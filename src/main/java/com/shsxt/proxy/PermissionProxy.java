@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.shsxt.base.AssertUtil;
 import com.shsxt.base.Constant;
+import com.shsxt.exception.LoginException;
 import com.shsxt.model.UserRole;
 import com.shsxt.service.PermissionService;
 import com.shsxt.service.UserRoleService;
@@ -47,7 +48,10 @@ public class PermissionProxy {
 		if ("/index".equals(uri) || "/user/login".equals(uri)) { // 放行
 			return pjp.proceed();
 		}
-		AssertUtil.intIsNotEmpty(userId, "请登录");
+		if (userId == null || userId < 1) {
+			throw new LoginException(201, "请先登录");
+		}
+		
 		
 		// 先从session查询是否存在用户的权限，如果存在就通过
 //		List<String> permissions = (List<String>) request.getSession()

@@ -88,12 +88,13 @@ function findCustomerFw() {
                     var series=this.series[0];
                     // ajax请求后台加载数据
                     $.post("khfwfx", {}, function(result) {
-                        var xArr=new Array();
+                        var xArr = new Array();
                         for(var i=0; i < result.length; i++) {
                             xArr[i] = new Array();
                             xArr[i][0] = result[i].serveType;
-                            xArr[i][1] = result[i].num;
+                            xArr[i][1] = result[i].amount;
                         }
+                        console.log(JSON.stringify(xArr));
                         series.setData(xArr);
                     },"json");
                 }
@@ -123,7 +124,7 @@ function findCustomerFw() {
             type: 'pie',
             name: '比例',
             data: [
-
+                   
             ]
         }]
     });

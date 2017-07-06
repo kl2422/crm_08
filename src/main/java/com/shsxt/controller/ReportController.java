@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.shsxt.base.BaseController;
-import com.shsxt.base.ResultInfo;
 import com.shsxt.dto.ReportGxQuery;
 import com.shsxt.service.ReportSerivce;
+import com.shsxt.vo.CustomerFw;
 import com.shsxt.vo.CustomerGc;
 
 @RequestMapping("report")
@@ -50,5 +50,11 @@ public class ReportController extends BaseController {
 		return result;
 	}
 	
+	@RequestMapping("khfwfx")
+	@ResponseBody
+	public List<CustomerFw> khfwfx() {
+		List<CustomerFw> result = reportService.khfwfx();
+		return result;
+	}
 	
 }
