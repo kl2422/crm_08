@@ -51,8 +51,9 @@ public class PermissionProxy {
 		String uri = request.getRequestURI();
 		String ctx = request.getContextPath();
 		logger.info("uri = {}, ctx = {}", uri, ctx);
-		String indexUri = ctx + "/index";
-		String loginUri = ctx + "/user/login";
+		String indexUri = "/index";
+		String loginUri = "/user/login";
+		logger.info("indexUri = {}, loginUri = {}", indexUri, loginUri);
 		if (indexUri.equals(uri) || loginUri.equals(uri)) { // 放行
 			return pjp.proceed();
 		}
