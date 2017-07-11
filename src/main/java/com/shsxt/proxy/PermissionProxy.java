@@ -8,11 +8,14 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.shsxt.base.AssertUtil;
 import com.shsxt.base.Constant;
+import com.shsxt.exception.LoginException;
 import com.shsxt.model.UserRole;
 import com.shsxt.service.PermissionService;
 import com.shsxt.service.UserRoleService;
@@ -30,6 +33,8 @@ public class PermissionProxy {
 	@Autowired
 	private PermissionService permissionService;
 	
+	private static Logger logger = LoggerFactory.getLogger(PermissionProxy.class);
+	
 	/**
 	 * 定义切入点
 	 */
@@ -44,10 +49,18 @@ public class PermissionProxy {
 		// 用户是否登录
 		Integer userId = LoginUserUtil.releaseUserIdFromCookie(request);
 		String uri = request.getRequestURI();
-		if ("/index".equals(uri) || "/user/login".equals(uri)) { // 放行
+		String ctx = request.getContextPath();
+		logger.info("uri = {}, ctx = {}", uri, ctx);
+		String indexUri = "/index";
+		String loginUri = "/user/login";
+		logger.info("indexUri = {}, loginUri = {}", indexUri, loginUri);
+		if (indexUri.equals(uri) || loginUri.equals(uri)) { // 放行
 			return pjp.proceed();
 		}
-		AssertUtil.intIsNotEmpty(userId, "请登录");
+		if (userId == null || userId < 1) {
+			throw new LoginException(201, "请先登录");
+		}
+		
 		
 		// 先从session查询是否存在用户的权限，如果存在就通过
 //		List<String> permissions = (List<String>) request.getSession()

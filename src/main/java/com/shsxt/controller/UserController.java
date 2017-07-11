@@ -4,6 +4,8 @@ package com.shsxt.controller;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,66 +19,76 @@ import com.shsxt.base.ResultInfo;
 import com.shsxt.dto.UserQuery;
 import com.shsxt.model.User;
 import com.shsxt.service.UserService;
+import com.shsxt.util.LoginUserUtil;
 import com.shsxt.vo.UserLoginIdentity;
 
 @RequestMapping("user")
 @Controller
 public class UserController extends BaseController {
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(UserController.class);
-	
-//	@RequestMapping("login")
-//	@GetMapping("login")
+
+	//	@RequestMapping("login")
+	//	@GetMapping("login")
 	@PostMapping("login")
-//	@PutMapping
+	//	@PutMapping
 	@ResponseBody
 	public ResultInfo login(String userName, String password) {
 		logger.info("這是一個參數：userName={}, password={}", userName, password);
 		UserLoginIdentity userLoginIdentity = userService.login(userName, password);
 		return success(userLoginIdentity);
 	}
-	
+
 	@RequestMapping("find_customer_manager")
 	@ResponseBody
 	public List<User> findCustomerManager () {
 		List<User> users = userService.findCustomerManager();
 		return users;
 	}
-	
-	
+
+
 	@RequestMapping("index")
 	public String index() {
 		return "user";
 	}
-	
+
 	@RequestMapping("list")
 	@ResponseBody
 	public Map<String, Object>selectForPage(UserQuery query) {
 		Map<String, Object> result = userService.selectForPage(query);
 		return result;
 	}
-	
+
 	@RequestMapping("add")
 	@ResponseBody
 	public ResultInfo add(User user) {
 		userService.add(user);
 		return success("添加成功");
 	}
-	
+
 	@RequestMapping("update")
 	@ResponseBody
 	public ResultInfo update(User user) {
 		userService.update(user);
 		return success("修改成功");
 	}
-	
+
 	@RequestMapping("delete")
 	@ResponseBody
 	public ResultInfo delete(String ids) {
 		userService.deleteBatch(ids);
 		return success("删除成功");
 	}
+
+	@RequestMapping("update_password")
+	public @ResponseBody Object updatePassword(String oldPassword,
+			String newPassword, String confirmPassword, HttpServletRequest request) {
+		int userId = LoginUserUtil.releaseUserIdFromCookie(request);
+		userService.updatePassword(userId, oldPassword, newPassword, confirmPassword);
+		return success("更新成功, 系统将自动退出, 请重新登陆");
+	}
+
 }

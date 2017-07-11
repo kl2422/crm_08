@@ -9,7 +9,7 @@ function resetValue(){
 }
 
 function saveCustomerService(){
-    var url = ctx + "/customer_serve/add_update";
+    var url = ctx + "customer_serve/add_update";
     $("#fm").form("submit",{
         url : url,
         onSubmit: function(){

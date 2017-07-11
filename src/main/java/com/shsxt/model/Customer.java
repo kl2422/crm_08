@@ -28,7 +28,7 @@ public class Customer extends BaseModel {
     private String khzh; // 开户帐号
     private String dsdjh; // 地税登记号
     private String gsdjh; // 国税登记号
-    private int state; // 客户状态 0 正常  1 客户流失
+    private int state; // 客户状态 0 正常  1 客户流失 2 待流失
 
 
     public String getKhno() {

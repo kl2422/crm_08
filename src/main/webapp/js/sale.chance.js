@@ -88,6 +88,9 @@ function deleteSaleChance() {
 				if(resp.resultCode == 1) { // 删除成功
 					$.messager.alert('系统提示', resp.resultMessage);
 					$("#dg").datagrid('load'); // 重新刷新数据
+				} else if (resp.resultCode == 201){
+					$.messager.alert('系统提示', resp.resultMessage);
+					window.parent.location.href= '/index';
 				} else {
 					$.messager.alert('系统提示', resp.resultMessage);
 				}
