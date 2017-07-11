@@ -39,7 +39,7 @@ public class CustomerService {
 	
 	/**
 	 * 分页查询
-	 * @param query
+	 * @param querya
 	 * @return
 	 */
 	public Map<String, Object> selectForPage(CustomerQuery query) {
